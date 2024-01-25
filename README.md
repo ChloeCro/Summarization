@@ -17,8 +17,10 @@ pip install -r requirements.txt
 ```
 
 ### Data
-Get the Rechtspraak cases zip file from (html here) \
-(explain usage of the scripts to acquire metadata)
+Get the Rechtspraak cases zip file [here](http://static.rechtspraak.nl/PI/OpenDataUitspraken.zip). Then run the unzip file to acquire folders for each year in a data folder.
+```
+python utils/unzip.py
+```
 
 ## Run the code
 
