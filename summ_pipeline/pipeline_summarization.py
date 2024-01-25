@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 import string
 import argparse
 import multiprocessing
@@ -8,9 +9,13 @@ import numpy as np
 
 from multiprocessing import Pool
 from functools import partial
+from pathlib import Path
 
-from utils.data_loader import get_document_list
-from utils.model_utils import load_model
+script_dir = Path(__file__).parent
+sys.path.append(str(script_dir.parent))
+
+from general_utils.data_loader import get_document_list
+from general_utils.model_utils import load_model
 from summ_pipeline.extractive_methods.graph_based_methods import textRank
 from summ_pipeline.extractive_methods.clustering_based_methods import k_means
 # from summ_pipeline.extractive_methods.heuristic_based_methods import
@@ -56,6 +61,7 @@ class Summarization():
 
 def parallel_process(func, args_list):
     num_processes = multiprocessing.cpu_count()
+    print(num_processes)
     with multiprocessing.Pool(processes=num_processes) as pool:
         results = pool.starmap(func, args_list)
     return results
@@ -64,19 +70,22 @@ if __name__ == "__main__":
     # create the argument parser, add the arguments
     parser = argparse.ArgumentParser(description='Summarization script')
     parser.add_argument('--method', type=int, choices=range(1, 6), default=1, help='Specify summarization method (1-5)')
-    parser.add_argument('--input', type=string, default="data/input_data.csv", help="The path to the data CSV file")
+    parser.add_argument('--input', type=str, default="data/input_data.csv", help="The path to the data CSV file")
     args = parser.parse_args()
 
     # read the data csv as pd dataframe
     df = pd.read_csv(args.input)
 
     # iterate in parallel over each row of the df to create a list of texts (documents)
-    documents = parallel_process(get_document_list,[(row) for row in df.to_dict('records')])  # TODO: expand to text from CSV
+    print("Gathering documents...")
+    documents = parallel_process(get_document_list,[(row,) for row in df.to_dict('records')])  # TODO: expand to text from CSV
 
-    summarizer = Summarization(summarizer_method=args.method)
+    summarizer = Summarization(method=args.method)
 
     # iterate in parallel over each text in the list and summarize them using args.method
-    summary_result = parallel_process(summarizer.summarize_wrapper, [(doc, args.method) for doc in documents])
+    print(f"Summarizing using method {args.method}...")
+    #summary_result = parallel_process(summarizer.summarize_wrapper, [(doc, args.method) for doc in documents])
+    summary_result = summarizer.summarize_text(documents[0])
 
     print(summary_result)
     # TODO: Expand by adding all the summaries to a CSV
@@ -88,3 +97,5 @@ if __name__ == "__main__":
     
 # TO CREATE requirements.txt RUN FOLLOWING:
     # pip freeze > requirements.txt
+
+# python summ_pipeline/pipeline_summarization.py --method 1 --input data/2022_rs_data.csv

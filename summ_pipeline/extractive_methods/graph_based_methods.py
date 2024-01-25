@@ -25,7 +25,7 @@ def textRank(text):
     scores = nx.pagerank(graph)
 
     top_sentence={sentence:scores[index] for index,sentence in enumerate(tokenized)}
-    top=dict(sorted(top_sentence.items(), key=lambda x: x[1], reverse=True)[:4])
+    top=dict(sorted(top_sentence.items(), key=lambda x: x[1], reverse=True)[:15])
 
     top_sentences = []
     for sent in tokenized:

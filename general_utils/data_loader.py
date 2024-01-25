@@ -8,8 +8,8 @@ def get_document_list(row):
     params:
     row := pandas dataframe row
     """
-    procesverloop = row['procesverloop']
-    overwegingen = row['overwegingen']
-    beslissing = row['beslissing']
+    procesverloop = str(row['procesverloop'])
+    overwegingen = str(row['overwegingen'])
+    beslissing = str(row['beslissing'])
 
     return ' '.join([procesverloop, overwegingen, beslissing])

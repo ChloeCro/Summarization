@@ -36,4 +36,7 @@ def k_means(text):
         min_distance = min(sentence_dict.values())
         summ_sentences.append(min(sentence_dict, key=sentence_dict.get))
 
+    for i in sorted(summ_sentences):
+        print(tokenized[i])
+
     return summ_sentences

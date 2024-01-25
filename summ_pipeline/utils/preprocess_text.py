@@ -11,7 +11,7 @@ from scipy import spatial
 
 def clean_tokenized(tokenized_text):
     # clean the tokenized text 
-    clean = [re.sub(r'[^\w\s]','',sentence.lower()) for sentence in tokenized_text]
+    clean = [re.sub(r'[^\w\s]','',sentence.lower()).replace('\n', '') for sentence in tokenized_text]
     
     return clean
 
@@ -32,10 +32,27 @@ def tokenize(text):
 
 def get_embeddings(tokens):
 
-    w2v=Word2Vec(tokens,size=1,min_count=1,iter=1000)
-    sentence_embeddings=[[w2v[word][0] for word in words] for words in tokens]
-    max_len=max([len(tokens) for tokens in tokens])
-    sentence_embeddings=[np.pad(embedding,(0,max_len-len(embedding)),'constant') for embedding in sentence_embeddings]
+    w2v=Word2Vec(tokens,vector_size=1,min_count=1,epochs=1000)
+    print(w2v)
+    # Initialize an empty list to store sentence embeddings
+    sentence_embeddings = []
+
+    # Calculate the sentence embeddings
+    for words in tokens:
+        word_embeddings = [w2v.wv[word] for word in words if word in w2v.wv]
+        if word_embeddings:
+            # If there are word embeddings for the words in the sentence
+            sentence_embedding = np.mean(word_embeddings, axis=0)
+            sentence_embeddings.append(sentence_embedding)
+        else:
+            # Handle the case where no word embeddings are found for the sentence
+            # You can choose to skip or assign a default value here
+            sentence_embeddings.append(np.zeros(w2v.vector_size))
+
+    
+    #sentence_embeddings=[[w2v[word][0] for word in words] for words in tokens]
+    #max_len=max([len(tokens) for tokens in tokens])
+    #sentence_embeddings=[np.pad(embedding,(0,max_len-len(embedding)),'constant') for embedding in sentence_embeddings]
     
     return sentence_embeddings
 
