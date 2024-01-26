@@ -8,18 +8,19 @@ import pandas as pd
 import numpy as np
 
 from multiprocessing import Pool
+from tqdm import tqdm
 from functools import partial
 from pathlib import Path
 
 script_dir = Path(__file__).parent
 sys.path.append(str(script_dir.parent))
 
-from general_utils.data_loader import get_document_list
+from general_utils.data_loader import get_single_document_list, filter_df, create_csv_from_df
 from general_utils.model_utils import load_model
 from summ_pipeline.extractive_methods.graph_based_methods import textRank
 from summ_pipeline.extractive_methods.clustering_based_methods import k_means
 # from summ_pipeline.extractive_methods.heuristic_based_methods import
-# from summ_pipeline.extractive_methods.deeplearning_based_methods import
+# from summ_pipeline.extractive_methods.deeplearning_based_methods import bertSum, gptSum
 
 class Summarization():
 
@@ -55,14 +56,16 @@ class Summarization():
         return result
     
     @staticmethod
-    def summarize_wrapper(text, method):
+    def summarize_wrapper(text, method): 
         summarizer = Summarization(method)
-        return summarizer.summarize_text(text)
+        result = summarizer.summarize_text(text)
+        return result
 
-def parallel_process(func, args_list):
+def parallel_process(func, args_list): 
     num_processes = multiprocessing.cpu_count()
     print(num_processes)
     with multiprocessing.Pool(processes=num_processes) as pool:
+        #results = list(tqdm(pool.imap(func, args_iterable), total=len(args_iterable)))
         results = pool.starmap(func, args_list)
     return results
 
@@ -73,27 +76,36 @@ if __name__ == "__main__":
     parser.add_argument('--input', type=str, default="data/input_data.csv", help="The path to the data CSV file")
     args = parser.parse_args()
 
-    # read the data csv as pd dataframe
+    # read the data csv as pd dataframe and filter df by reference summaries
     df = pd.read_csv(args.input)
+    df = filter_df(df)
 
     # iterate in parallel over each row of the df to create a list of texts (documents)
     print("Gathering documents...")
-    documents = parallel_process(get_document_list,[(row,) for row in df.to_dict('records')])  # TODO: expand to text from CSV
+    documents = parallel_process(get_single_document_list,[(row,) for row in df.to_dict('records')])  # TODO: expand to text from CSV
 
-    summarizer = Summarization(method=args.method)
+    #summarizer = Summarization(method=args.method)
+    
+    #raise RuntimeError('Intentionally stopping the code here for debugging purposes.')
 
     # iterate in parallel over each text in the list and summarize them using args.method
     print(f"Summarizing using method {args.method}...")
-    #summary_result = parallel_process(summarizer.summarize_wrapper, [(doc, args.method) for doc in documents])
-    summary_result = summarizer.summarize_text(documents[0])
+    summary_result = parallel_process(Summarization.summarize_wrapper, [(doc, args.method) for doc in documents])
+    #summary_result = summarizer.summarize_text(documents[0])
 
     print(summary_result)
+    df['gen_summary'] = summary_result
+    print(df)
     # TODO: Expand by adding all the summaries to a CSV
 
+# EXTRACTIVE
 # 1: TextRank
-# 2: k-means clustering
-# 3: extractive BERT (non finetuned model)
-# 4: extractive GPT2 (non finetuned model)
+# 2: K-means clustering
+# 3: BERT (non finetuned model)
+# 4: GPT2 (non finetuned model)
+# -----------------------------------------
+# ABSTRACTIVE
+# 5: T5
     
 # TO CREATE requirements.txt RUN FOLLOWING:
     # pip freeze > requirements.txt

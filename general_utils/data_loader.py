@@ -1,6 +1,6 @@
 import pandas as pd
 
-def get_document_list(row):
+def get_single_document_list(row):
     """
     (for now) Extracts the texts from the three section columns for each row, 
     combines them and adds them as a full text in a string.
@@ -13,3 +13,16 @@ def get_document_list(row):
     beslissing = str(row['beslissing'])
 
     return ' '.join([procesverloop, overwegingen, beslissing])
+
+def filter_df(df):
+    """
+    filtering the dataframe based on rules.
+    
+    Rules:
+    1. Remove rows with no or too short reference summaries (inhoudsindicatie text length <= 15)
+    """
+    df_filtered = df[df['inhoudsindicatie'].apply(lambda x: len(x.split(' ') if isinstance(x, str) else '') >= 15)]
+    return df_filtered
+
+def create_csv_from_df():
+    pass

@@ -33,7 +33,6 @@ def tokenize(text):
 def get_embeddings(tokens):
 
     w2v=Word2Vec(tokens,vector_size=1,min_count=1,epochs=1000)
-    print(w2v)
     # Initialize an empty list to store sentence embeddings
     sentence_embeddings = []
 
@@ -44,10 +43,10 @@ def get_embeddings(tokens):
             # If there are word embeddings for the words in the sentence
             sentence_embedding = np.mean(word_embeddings, axis=0)
             sentence_embeddings.append(sentence_embedding)
-        else:
+        #else:
             # Handle the case where no word embeddings are found for the sentence
             # You can choose to skip or assign a default value here
-            sentence_embeddings.append(np.zeros(w2v.vector_size))
+        #    sentence_embeddings.append(np.zeros(w2v.vector_size))
 
     
     #sentence_embeddings=[[w2v[word][0] for word in words] for words in tokens]
