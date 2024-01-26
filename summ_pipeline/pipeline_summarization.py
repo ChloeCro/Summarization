@@ -73,7 +73,7 @@ if __name__ == "__main__":
     # create the argument parser, add the arguments
     parser = argparse.ArgumentParser(description='Summarization script')
     parser.add_argument('--method', type=int, choices=range(1, 6), default=1, help='Specify summarization method (1-5)')
-    parser.add_argument('--input', type=str, default="data/input_data.csv", help="The path to the data CSV file")
+    parser.add_argument('--input', type=str, default="data/2022_rs_data.csv", help="The path to the data CSV file")
     args = parser.parse_args()
 
     # read the data csv as pd dataframe and filter df by reference summaries
@@ -84,7 +84,6 @@ if __name__ == "__main__":
     print("Gathering documents...")
     documents = parallel_process(get_single_document_list,[(row,) for row in df.to_dict('records')])  # TODO: expand to text from CSV
 
-    #summarizer = Summarization(method=args.method)
     
     #raise RuntimeError('Intentionally stopping the code here for debugging purposes.')
 
