@@ -15,7 +15,7 @@ from pathlib import Path
 script_dir = Path(__file__).parent
 sys.path.append(str(script_dir.parent))
 
-from general_utils.data_loader import get_single_document_list, filter_df, create_csv_from_df
+from general_utils.data_helper import get_single_document_list, filter_df, create_csv_from_df
 from general_utils.model_utils import load_model
 from summ_pipeline.extractive_methods.graph_based_methods import textRank
 from summ_pipeline.extractive_methods.clustering_based_methods import k_means
@@ -46,14 +46,14 @@ class Summarization():
         if self.method == 1:
             result = textRank(text) # result is a list of top sentences!!
         elif self.method == 2:
-            return k_means(text) # add param for number of clusters?
+            result = k_means(text) # add param for number of clusters?
         #elif self.summarizer_method == 3:
         #    return method_3_summary(text)
         # Add more methods as needed
         else:
             raise ValueError(f"Unsupported summarization method: {self.method}")
 
-        return result
+        return ' '.join(result) #result
     
     @staticmethod
     def summarize_wrapper(text, method): 
@@ -65,7 +65,6 @@ def parallel_process(func, args_list):
     num_processes = multiprocessing.cpu_count()
     print(num_processes)
     with multiprocessing.Pool(processes=num_processes) as pool:
-        #results = list(tqdm(pool.imap(func, args_iterable), total=len(args_iterable)))
         results = pool.starmap(func, args_list)
     return results
 
@@ -79,12 +78,14 @@ if __name__ == "__main__":
     # read the data csv as pd dataframe and filter df by reference summaries
     df = pd.read_csv(args.input)
     df = filter_df(df)
+    
+    #try it with a number of cases
+    #df = df.head(100)
 
     # iterate in parallel over each row of the df to create a list of texts (documents)
     print("Gathering documents...")
     documents = parallel_process(get_single_document_list,[(row,) for row in df.to_dict('records')])  # TODO: expand to text from CSV
-
-    
+ 
     #raise RuntimeError('Intentionally stopping the code here for debugging purposes.')
 
     # iterate in parallel over each text in the list and summarize them using args.method
@@ -95,6 +96,7 @@ if __name__ == "__main__":
     print(summary_result)
     df['gen_summary'] = summary_result
     print(df)
+    df.to_csv("test_results.csv")
     # TODO: Expand by adding all the summaries to a CSV
 
 # EXTRACTIVE
