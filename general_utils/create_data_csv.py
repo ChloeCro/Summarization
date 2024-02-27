@@ -108,27 +108,39 @@ def process_files_in_parallel(files):
 if __name__ == '__main__':
     # Parse arguments from command line
     parser = argparse.ArgumentParser()
-    parser.add_argument('--year', type=str, help='the year we want to process')
+    #parser.add_argument('--year', type=str, help='the year we want to process or \'all\' if we want to process all years.')
     parser.add_argument('--save', type=bool, default=False)
     args = parser.parse_args()
     
     # Set path to XML files
-    year = args.year
+    years = [
+    1913, 1914, 1915, 1916, 1917, 1918, 1919, 1920, 1921, 1922, 1923, 1924, 1925, 1926, 1927, 1928, 1929, 1930, 1931, 1932,
+    1933, 1934, 1935, 1936, 1937, 1938, 1939, 1940, 1941, 1942, 1943, 1944, 1945, 1946, 1947, 1948, 1949, 1950, 1951, 1952,
+    1953, 1954, 1955, 1956, 1957, 1958, 1959, 1960, 1961, 1962, 1963, 1964, 1965, 1966, 1967, 1968, 1969, 1970, 1971, 1972,
+    1973, 1974, 1975, 1976, 1977, 1978, 1979, 1980, 1981, 1982, 1983, 1984, 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1992,
+    1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012,
+    2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022
+    ]
+
+    #year = args.year
     print("start")
-    folder_path = f'unzip_data/{year}'
-    xml_files = [os.path.join(folder_path, file) for file in os.listdir(folder_path) if file.endswith('.xml')]
+    for year in years:
+        folder_path = f'unzip_data/{year}'
+        xml_files = [os.path.join(folder_path, file) for file in os.listdir(folder_path) if file.endswith('.xml')]
 
-    # Process the data
-    result_lists = process_files_in_parallel(xml_files)
+        # Process the data
+        result_lists = process_files_in_parallel(xml_files)
 
-    # Create df for metadata
-    column_names = ['ecli', 'date', 'inhoudsindicatie', 'title_list','sections_list','procesverloop','overwegingen', 'beslissing']
-    df = pd.DataFrame(result_lists, columns=column_names)
-    print(len(df))
+        # Create df for metadata
+        column_names = ['ecli', 'date', 'inhoudsindicatie', 'title_list','sections_list','procesverloop','overwegingen', 'beslissing']
+        df = pd.DataFrame(result_lists, columns=column_names)
+        print(len(df))
 
-    # Further processing or analysis with the DataFrame
-    print(df.head())
+        # Further processing or analysis with the DataFrame
+        print(df.head())
 
-    # Optional: Save
-    if args.save == True:
-        df.to_csv(f'{year}_rs_data.csv', index=False)
+        # Optional: Save
+        if args.save == True:
+            df.to_csv(f'data/data_by_year/{year}_rs_data.csv', index=False)
+
+# python general_utils\create_data_csv.py --year 1905 --save

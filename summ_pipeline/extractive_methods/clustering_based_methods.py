@@ -9,11 +9,11 @@ import numpy as np
 from sklearn.cluster import KMeans
 from scipy.spatial import distance
 
-from summ_pipeline.utils.preprocess_text import tokenize, clean_tokenized, remove_stopwords, get_embeddings
+from summ_pipeline.utils.preprocess_text import tokenize_sent, clean_tokenized, remove_stopwords, get_embeddings
 
 def k_means(text):
     # tokenize sentences and clean them
-    tokenized = tokenize(text)
+    tokenized = tokenize_sent(text)
     tokenized_clean = clean_tokenized(tokenized)
     no_stopwords_tokens = remove_stopwords (tokenized_clean)
 

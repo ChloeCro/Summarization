@@ -4,7 +4,7 @@ import string
 import pandas as pd
 import numpy as np
 
-from nltk.tokenize import sent_tokenize
+from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
 from gensim.models import Word2Vec
 from scipy import spatial
@@ -24,11 +24,18 @@ def remove_stopwords(tokenized_text):
 
     return sentence_tokens
 
-def tokenize(text):
+def tokenize_sent(text):
     # tokenize
     sentences = sent_tokenize(text)
 
     return sentences
+
+def tokenize_word(text):
+    tokens = word_tokenize(text)
+    return tokens
+
+def chunk_text(text):
+    pass
 
 def get_embeddings(tokens):
 

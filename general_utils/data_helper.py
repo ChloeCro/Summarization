@@ -24,5 +24,9 @@ def filter_df(df):
     df_filtered = df[df['inhoudsindicatie'].apply(lambda x: len(x.split(' ') if isinstance(x, str) else '') >= 15)]
     return df_filtered
 
+def load_df(path):
+    data = pd.read_csv(path)
+    return data
+
 def create_csv_from_df():
     pass

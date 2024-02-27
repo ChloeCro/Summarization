@@ -6,11 +6,11 @@ import numpy as np
 import pandas as pd
 import networkx as nx
 
-from summ_pipeline.utils.preprocess_text import tokenize, clean_tokenized, remove_stopwords, get_embeddings, get_similarity_matrix
+from summ_pipeline.utils.preprocess_text import tokenize_sent, clean_tokenized, remove_stopwords, get_embeddings, get_similarity_matrix
 
 def textRank(text):
     # clean and tokenize text
-    tokenized = tokenize(text)
+    tokenized = tokenize_sent(text)
     clean_tokens = clean_tokenized(tokenized)
     no_stopwords_tokens = remove_stopwords(clean_tokens)
 
