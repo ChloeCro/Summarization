@@ -76,6 +76,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Summarization script')
     parser.add_argument('--method', type=int, choices=range(1, 6), default=1, help='Specify summarization method (1-5)')
     parser.add_argument('--input', type=str, default="data/data_by_year/2022_rs_data.csv", help="The path to the data CSV file")
+    parser.add_argument('--multi', action='store_true', help="Use multiprocessing?")
     args = parser.parse_args()
 
     # read the data csv as pd dataframe and filter df by reference summaries
@@ -102,6 +103,10 @@ if __name__ == "__main__":
             print("Number " + str(id) + " of " + str(len(documents)))
             summary = summarizer.summarize_text(doc, bert_model)
             summary_result.append(summary)
+    elif args.multi == False:
+        summary_result = []
+        summary = summarizer.summarize_text(documents[0])
+        summary_result.append(summary)
     else:
         print("Multiprocessing...")
         summary_result = parallel_process(Summarization.summarize_wrapper, [(doc, args.method) for doc in documents])
@@ -112,7 +117,7 @@ if __name__ == "__main__":
     df_copy = df_copy.head(20)
     df_copy['gen_summary'] = summary_result
     print(df_copy)
-    df_copy.to_csv("bert_test_results.csv")
+    df_copy.to_csv("bert_test_results_2.csv")
     # TODO: Expand by adding all the summaries to a CSV
 
 # EXTRACTIVE

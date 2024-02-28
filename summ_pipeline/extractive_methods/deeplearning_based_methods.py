@@ -21,22 +21,14 @@ script_dir = Path(__file__).parent
 sys.path.append(str(script_dir.parent))
 
 from summarizer import Summarizer, TransformerSummarizer
-from summ_pipeline.utils.preprocess_text import tokenize_word
+from summ_pipeline.utils.preprocess_text import sliding_window
 
 
 def bertSum(text, model):
-    chunk_size = 1048
+    chunk_size = 516
 
-    if len(text) > 1048:
-        tokenized_text = tokenize_word(text)
-        # Initialize an empty list to hold the chunks
-        chunks = []
-        
-        # Loop over the words, stepping by chunk_size at a time
-        for i in range(0, len(tokenized_text), chunk_size):
-            # Join the words in the current chunk and add to the chunks list
-            chunk = ' '.join(tokenized_text[i:i+chunk_size])
-            chunks.append(chunk)
+    if len(text) > chunk_size:
+        chunks = sliding_window(text, chunk_size)
     else:
         chunks = [text]
 
@@ -45,7 +37,7 @@ def bertSum(text, model):
     
     summarized_chunks = []
     for chunk in chunks:
-        summarized_chunk = ''.join(model(chunk, min_length=10, max_length=150))
+        summarized_chunk = ''.join(model(chunk, min_length=10))
         summarized_chunks.append(summarized_chunk)
     
     return summarized_chunks

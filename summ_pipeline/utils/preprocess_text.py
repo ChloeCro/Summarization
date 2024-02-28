@@ -11,8 +11,8 @@ from scipy import spatial
 
 def clean_tokenized(tokenized_text):
     # clean the tokenized text 
-    clean = [re.sub(r'[^\w\s]','',sentence.lower()).replace('\n', '') for sentence in tokenized_text]
-    
+    clean = [re.sub(r'[^\w\s]|[\d]','',sentence.lower()).replace('\n', '') for sentence in tokenized_text]
+
     return clean
 
 def remove_stopwords(tokenized_text):
@@ -34,10 +34,45 @@ def tokenize_word(text):
     tokens = word_tokenize(text)
     return tokens
 
-def chunk_text(text):
-    pass
+def sliding_window(text, window_size=500):
+    #default max token limit is 516 tokens therefore default window size of 500
+    tokenized_text = tokenize_word(text)
+
+    overlap = window_size // 2
+
+    slices = []
+
+    start_index = 0
+
+    while start_index < len(tokenized_text):
+        # If it's not the first chunk, move back 'overlap' words to include them in the current chunk for the left overlap
+        if start_index > 0:
+            start_index -= overlap
+        
+        # Select words for the current chunk
+        end_index = start_index + window_size
+        chunk = ' '.join(tokenized_text[start_index:end_index])
+        
+        # Add the chunk to our list of chunks
+        slices.append(chunk)
+
+        # Update the start index for the next chunk, ensuring the right overlap
+        start_index = end_index
+
+        # If we are at the end and there's no more room for a full chunk, break the loop
+        if start_index >= len(tokenized_text) - overlap:
+            break
+
+    return slices
 
 def get_embeddings(tokens):
+
+    for sublist in tokens:
+    # Use a list comprehension to filter out empty strings from each sublist
+        sublist[:] = [item for item in sublist if item != '']
+
+    print(tokens)
+    
 
     w2v=Word2Vec(tokens,vector_size=1,min_count=1,epochs=1000)
     # Initialize an empty list to store sentence embeddings
