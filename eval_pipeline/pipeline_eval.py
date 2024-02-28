@@ -18,7 +18,6 @@ script_dir = Path(__file__).parent
 sys.path.append(str(script_dir.parent))
 
 from general_utils.data_helper import get_single_document_list, filter_df, create_csv_from_df
-from general_utils.model_utils import load_model
 from eval_pipeline.evaluation_methods import rouge_method, bertscore, llm_method
 
 class Evaluation():
@@ -32,22 +31,22 @@ class Evaluation():
         methods_requiring_model = [3]  # TODO: Set this to correct values
         return method_number in methods_requiring_model
 
-    def evaluate(self, text, model=None):
+    def evaluate(self, reference, summary):
         # result should be list of sentences!
 
         result = []
         # run the evaluation using the method
         if self.method == 1:
-            result = rouge_method(text) # result is a list of top sentences!!
+            result = rouge_method(reference, summary) # result is a list of top sentences!!
         elif self.method == 2:
-            result = bertscore(text) # add param for number of clusters?
+            result = bertscore(reference, summary) # add param for number of clusters?
         elif self.method == 3:
-            result = llm_method(text, model)
+            result = llm_method(reference, summary)
         # Add more methods as needed
         else:
             raise ValueError(f"Unsupported evaluation method: {self.method}")
 
-        return ' '.join(result) #return list of evaluation results
+        return result #return list of evaluation results
     
     @staticmethod
     def evaluator_wrapper(reference, summary, method): 
@@ -74,21 +73,30 @@ if __name__ == "__main__":
     df = pd.read_csv(args.input)
     
     #try it with a number of cases
-    #df = df.head(100)
+    df = df.head(10)
 
     # iterate in parallel over each row of the df to create a list of texts (documents)
     print("Gathering references and summaries...")
-    references = parallel_process(get_single_document_list,[(row,) for row in df['reference'].to_dict('records')])  # TODO: expand to text from CSV
-    summaries = parallel_process(get_single_document_list,[(row,) for row in df['prediction'].to_dict('records')])
+    references = df['inhoudsindicatie'].tolist()  # TODO: expand to text from CSV
+    summaries = df['gen_summary'].tolist()
 
+    evaluator = Evaluation(args.method)
     #TODO: expand to get evaluation results
-    results = []
-    results = parallel_process(Evaluation.evaluator_wrapper, [(ref, summ, args.method) for ref, summ in zip(references, summaries)])
+    print("Evaluating...")
     
-    print(results)
+    results = []
+    for i in range(0, 10):
+        result = evaluator.evaluate(references[i], summaries[i])
+        results.append(result)
+    
+    #results = parallel_process(Evaluation.evaluator_wrapper, [(ref, summ, args.method) for ref, summ in zip(references, summaries)])
+    df = pd.DataFrame(results)
+    print(df)
 
 # EVALUATIONS
 # 1: ROUGE
 
 # CSV FORMAT:
     # HAVE 2 COLUMNS OF "REFERENCE" & "PREDICTION" !!!!!!
+
+# python eval_pipeline/pipeline_eval.py --method 1 --input bert_test_results_1.csv
