@@ -90,13 +90,21 @@ if __name__ == "__main__":
         results.append(result)
     
     #results = parallel_process(Evaluation.evaluator_wrapper, [(ref, summ, args.method) for ref, summ in zip(references, summaries)])
-    df = pd.DataFrame(results)
+        
+    # Mean of the results
+    if args.method == 1:
+        avg_results = {key: sum(d[key] for d in results) / len(results) for key in results[0]}
+        df = pd.DataFrame([avg_results])
+    elif args.method == 2:
+        avg_results = {key: sum(d[key][0] for d in results) / len(results) for key in results[0]}
+        df = pd.DataFrame([avg_results])
     print(df)
 
 # EVALUATIONS
 # 1: ROUGE
+# 2: BERTscore
 
 # CSV FORMAT:
     # HAVE 2 COLUMNS OF "REFERENCE" & "PREDICTION" !!!!!!
 
-# python eval_pipeline/pipeline_eval.py --method 1 --input bert_test_results_1.csv
+# python eval_pipeline/pipeline_eval.py --method 1 --input results/bert_test_results_1.csv

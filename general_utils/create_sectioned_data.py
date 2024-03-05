@@ -23,7 +23,7 @@ if __name__ == '__main__':
     df_metadata = rex.get_rechtspraak_metadata(save_file='n', dataframe=df)
 
     # do some magical dataframe filtering to only get entries with full-text and other stuff
-
+    
 
     # section the data
 
