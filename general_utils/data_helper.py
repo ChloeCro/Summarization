@@ -14,6 +14,11 @@ def get_single_document_list(row):
 
     return ' '.join([procesverloop, overwegingen, beslissing])
 
+def get_text(row):
+    # For rechtspraak-extractor
+    text = str(row['full_text'])
+    return text
+
 def filter_df(df):
     """
     filtering the dataframe based on rules.
