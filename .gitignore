@@ -4,3 +4,12 @@
 /results
 /.vscode
 /.ipynb_checkpoints
+/.old
+old/bert_method.py
+old/__pycache__/bert_method.cpython-39.pyc
+old/multi-test-fulltext.csv
+old/rechtspraak_data.csv
+old/rechtspraak_metadata.csv
+old/test_segments.csv
+old/test.txt
+old/working before 2 diff inputs.txt

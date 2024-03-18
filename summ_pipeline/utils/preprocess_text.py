@@ -9,9 +9,17 @@ from nltk.corpus import stopwords
 from gensim.models import Word2Vec
 from scipy import spatial
 
+"""
 def clean_tokenized(tokenized_text):
     # clean the tokenized text 
     clean = [re.sub(r'[^\w\s]|[\d]','',sentence.lower()).replace('\n', '') for sentence in tokenized_text]
+
+    return clean
+"""
+
+def clean_tokenized(tokenized_text):
+    # Extended cleaning to include tabs, multiple newlines, and other whitespace characters
+    clean = [re.sub(r'\s+', ' ', re.sub(r'[^\w\s]|[\d]', '', sentence.lower())).strip() for sentence in tokenized_text]
 
     return clean
 
@@ -33,6 +41,19 @@ def tokenize_sent(text):
 def tokenize_word(text):
     tokens = word_tokenize(text)
     return tokens
+
+def remove_info(text):
+    pattern_file = open('general_utils\patterns.txt', 'r')
+    lines = pattern_file.readlines()
+    patterns = [line.strip()[2:-1].replace('\\\\', '\\') for line in lines]
+    super_pattern = "|".join(patterns)
+    print(super_pattern)
+
+    sectioning = re.split(super_pattern, text)
+
+    text = ' '.join(sectioning[1:])
+
+    return text
 
 def sliding_window(text, window_size=500):
     #default max token limit is 516 tokens therefore default window size of 500
@@ -71,7 +92,7 @@ def get_embeddings(tokens):
     # Use a list comprehension to filter out empty strings from each sublist
         sublist[:] = [item for item in sublist if item != '']
 
-    print(tokens)
+    #print(tokens)
     
 
     w2v=Word2Vec(tokens,vector_size=1,min_count=1,epochs=1000)

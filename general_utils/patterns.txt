@@ -1,3 +1,4 @@
 r"\n(?=Procesverloop)"
 r"\n(?=Overwegingen)"
 r"\n(?=Beslissing)"
+r"\n(?=\d[A-Za-z]+)"

@@ -1,4 +1,5 @@
 import pandas as pd
+import re
 
 def get_single_document_list(row):
     """
@@ -16,8 +17,9 @@ def get_single_document_list(row):
 
 def get_text(row):
     # For rechtspraak-extractor
-    text = str(row['full_text'])
+    text = str(row['fulltext'])
     return text
+
 
 def filter_df(df):
     """

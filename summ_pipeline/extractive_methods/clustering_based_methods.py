@@ -11,7 +11,7 @@ from scipy.spatial import distance
 
 from summ_pipeline.utils.preprocess_text import tokenize_sent, clean_tokenized, remove_stopwords, get_embeddings
 
-def k_means(text):
+def k_means(text, n_clusters):
     # tokenize sentences and clean them
     tokenized = tokenize_sent(text)
     tokenized_clean = clean_tokenized(tokenized)
@@ -21,7 +21,7 @@ def k_means(text):
     sentence_embeddings = get_embeddings(no_stopwords_tokens)
 
     # clustering
-    n_clusters = 5
+    #n_clusters = 5
     kmeans = KMeans(n_clusters, init = 'k-means++', random_state = 42)
     y_kmeans = kmeans.fit_predict(sentence_embeddings)
 

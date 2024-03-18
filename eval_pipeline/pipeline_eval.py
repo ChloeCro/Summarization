@@ -73,19 +73,19 @@ if __name__ == "__main__":
     df = pd.read_csv(args.input)
     
     #try it with a number of cases
-    df = df.head(10)
+    #df = df.head(10)
 
     # iterate in parallel over each row of the df to create a list of texts (documents)
     print("Gathering references and summaries...")
     references = df['inhoudsindicatie'].tolist()  # TODO: expand to text from CSV
-    summaries = df['gen_summary'].tolist()
+    summaries = df['prediction'].tolist()
 
     evaluator = Evaluation(args.method)
     #TODO: expand to get evaluation results
     print("Evaluating...")
     
     results = []
-    for i in range(0, 10):
+    for i in range(0, len(references)):
         result = evaluator.evaluate(references[i], summaries[i])
         results.append(result)
     
@@ -98,7 +98,7 @@ if __name__ == "__main__":
     elif args.method == 2:
         avg_results = {key: sum(d[key][0] for d in results) / len(results) for key in results[0]}
         df = pd.DataFrame([avg_results])
-    print(df)
+    print(f"Average result for {len(references)} cases\n", df)
 
 # EVALUATIONS
 # 1: ROUGE

@@ -35,17 +35,16 @@ def parallel_process(func, args_list):
 
 if __name__ == '__main__':
     # create the argument parser, add the arguments
-    #parser = argparse.ArgumentParser(description='Data sectioning script')
-    #parser.add_argument('--method', type=int, choices=range(1, 6), default=1, help='Specify summarization method (1-5)')
-    #parser.add_argument('--input', type=str, default="data/data_by_year/2022_rs_data.csv", help="The path to the data CSV file")
+    parser = argparse.ArgumentParser(description='Data sectioning script')
+    parser.add_argument('--input', type=str, default="data/data_by_year/2022_rs_data.csv", help="The path to the data CSV file")
     #parser.add_argument('--multi', action='store_true', help="Use multiprocessing?")
-    #args = parser.parse_args()
+    args = parser.parse_args()
 
     # acquire the data using rechtspraak extractor
     #df = rex.get_rechtspraak(max_ecli=1000, sd='2022-03-01', ed='2022-05-01', save_file='n')
     #df_metadata = rex.get_rechtspraak_metadata(save_file='n', dataframe=df)
 
-    df_metadata = pd.read_csv('rechtspraak_data.csv')
+    df_metadata = pd.read_csv(args.input)
     pattern_file = open('general_utils\patterns.txt', 'r')
     lines = pattern_file.readlines()
     patterns = [line.strip()[2:-1].replace('\\\\', '\\') for line in lines]
@@ -60,14 +59,11 @@ if __name__ == '__main__':
         segmented.append(sections)
 
     print(segmented)
-    #print(df_metadata)
-
-
-
-    #df_metadata.to_csv('rechtspraak_data.csv')
+    df_metadata['sections'] = segmented
+    df_metadata.to_csv('sectioned_data.csv')
     # do some magical dataframe filtering to only get entries with full-text and other stuff
     
 
     # section the data
 
-# python general_utils\create_data_csv.py --year 1905 --save
+# python general_utils\create_sectioned_data.py --input data/data_by_year/2022_rs_data.csv

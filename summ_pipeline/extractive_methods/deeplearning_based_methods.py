@@ -11,7 +11,10 @@ import argparse
 import multiprocessing
 import pandas as pd
 import numpy as np
+import torch
 
+from transformers import BertTokenizerFast, BertForSequenceClassification
+from torch.utils.data import DataLoader, TensorDataset
 from multiprocessing import Pool
 from tqdm import tqdm
 from functools import partial
@@ -23,8 +26,8 @@ sys.path.append(str(script_dir.parent))
 from summarizer import Summarizer, TransformerSummarizer
 from summ_pipeline.utils.preprocess_text import sliding_window
 
-
 def bertSum(text, model):
+
     chunk_size = 516
 
     if len(text) > chunk_size:
@@ -42,6 +45,8 @@ def bertSum(text, model):
     
     return summarized_chunks
 
+
+#----------- HELPER FUNCTIONS -------------
 
 def clean_text(text):
     text = text.replace('\n',' ')
