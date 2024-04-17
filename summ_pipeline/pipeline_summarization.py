@@ -7,10 +7,15 @@ import multiprocessing
 import pandas as pd
 import numpy as np
 import datetime
+import time
 import psutil
 import warnings
 warnings.filterwarnings("ignore")
 
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
+
+from datetime import timedelta
 from multiprocessing import Pool
 from tqdm import tqdm
 from functools import partial
@@ -27,6 +32,7 @@ from summ_pipeline.extractive_methods.graph_based_methods import textRank
 from summ_pipeline.extractive_methods.clustering_based_methods import k_means
 # from summ_pipeline.extractive_methods.heuristic_based_methods import
 from summ_pipeline.extractive_methods.deeplearning_based_methods import bertSum #, gptSum
+from summ_pipeline.abstractive_methods.methods import bart
 from old.bert_method import bert
 #from summ_pipeline.abstractive_methods.methods import bart, t5
 
@@ -55,9 +61,15 @@ class Summarization():
         result = []
         # run the summarization using the method
         if self.method == 1:
-            result = textRank(text, param[0]) # result is a list of top sentences!!
+            try:
+                result = textRank(text, param[0]) # result is a list of top sentences!!
+            except:
+                result = []
         elif self.method == 2:
-            result = k_means(text) # add param for number of clusters?
+            try:
+                result = k_means(text, param[0]) # add param for number of clusters?
+            except:
+                result = []
         elif self.method == 3:
             #result = bert(text)
             model = Summarizer()
@@ -122,9 +134,11 @@ if __name__ == "__main__":
     # read the data csv as pd dataframe and filter df by reference summaries
     df = pd.read_csv(args.input)
     df = filter_df(df)
+
+    print(len(df))
     
     #try it with a number of cases
-    #df = df.head(100)
+    #df = df.head(5)
     print(psutil.cpu_count(logical=True))
 
     # iterate in parallel over each row of the df to create a list of texts (documents)
@@ -137,6 +151,7 @@ if __name__ == "__main__":
 
     # iterate in parallel over each text in the list and summarize them using args.method
     print(f"Summarizing using method {args.method}...")
+    start = time.time()
     if summarizer.requires_model(args.method):
         print("Model required...")
         #summary_result = summarizer.summarize_text(documents, param)
@@ -148,14 +163,16 @@ if __name__ == "__main__":
             summary_result.append(summary)
     elif args.multi == False:
         summary_result = []
-        summary = summarizer.summarize_text(documents[0], param)
+        summary = summarizer.summarize_text(documents[:args.n_cases], param)
         summary_result.append(summary)
     else:
         print("Multiprocessing...")
-        summary_result = parallel_process(Summarization.summarize_wrapper, [(doc, args.method, param) for doc in documents])
+        summary_result = parallel_process(Summarization.summarize_wrapper, [(doc, args.method, param) for doc in documents[:args.n_cases]])
         #summary_result = summarizer.summarize_text(documents[0])
 
-    print(summary_result)
+    end = time.time()
+    print('Prediction time:', str(timedelta(seconds=end-start)))
+    #print(summary_result)
     df_copy = df
     df_copy = df_copy.head(args.n_cases)
     df_copy['prediction'] = summary_result
@@ -195,6 +212,8 @@ if __name__ == "__main__":
 # ABSTRACTIVE
 # 5: BART
 # 6: T5
+# 7: FT BART
+# 8: FT T5
     
 # TO CREATE requirements.txt RUN FOLLOWING:
     # pip freeze > requirements.txt

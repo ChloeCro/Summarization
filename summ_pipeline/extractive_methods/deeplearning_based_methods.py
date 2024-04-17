@@ -40,7 +40,7 @@ def bertSum(text, model):
     
     summarized_chunks = []
     for chunk in chunks:
-        summarized_chunk = ''.join(model(chunk, min_length=10))
+        summarized_chunk = ''.join(model(chunk, min_length=10, max_length=200))
         summarized_chunks.append(summarized_chunk)
     
     return summarized_chunks

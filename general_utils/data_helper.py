@@ -28,7 +28,8 @@ def filter_df(df):
     Rules:
     1. Remove rows with no or too short reference summaries (inhoudsindicatie text length <= 15)
     """
-    df_filtered = df[df['inhoudsindicatie'].apply(lambda x: len(x.split(' ') if isinstance(x, str) else '') >= 15)]
+    df_filtered = df[df['fulltext'].notna() & (df['fulltext'] != '')]
+    df_filtered = df_filtered[df_filtered['inhoudsindicatie'].apply(lambda x: len(x.split(' ') if isinstance(x, str) else '') >= 15)]
     return df_filtered
 
 def load_df(path):

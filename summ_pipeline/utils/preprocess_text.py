@@ -47,7 +47,6 @@ def remove_info(text):
     lines = pattern_file.readlines()
     patterns = [line.strip()[2:-1].replace('\\\\', '\\') for line in lines]
     super_pattern = "|".join(patterns)
-    print(super_pattern)
 
     sectioning = re.split(super_pattern, text)
 

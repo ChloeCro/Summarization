@@ -71,6 +71,7 @@ if __name__ == "__main__":
 
     # read the data csv as pd dataframe and filter df by reference summaries
     df = pd.read_csv(args.input)
+    df = df[df['prediction'].notna() & (df['prediction'] != '')]
     
     #try it with a number of cases
     #df = df.head(10)
@@ -86,6 +87,7 @@ if __name__ == "__main__":
     
     results = []
     for i in range(0, len(references)):
+        print(f"doc {i} of {len(references)}")
         result = evaluator.evaluate(references[i], summaries[i])
         results.append(result)
     

@@ -13,3 +13,12 @@ old/rechtspraak_metadata.csv
 old/test_segments.csv
 old/test.txt
 old/working before 2 diff inputs.txt
+topic_modeling/cluster.csv
+topic_modeling/final_result.csv
+topic_modeling/kmeans.csv
+topic_modeling/sectioned_data_2022.csv
+topic_modeling/sectioned_data.csv
+topic_modeling/sorted_sections.csv
+sectioned_2022.csv
+sectioned_data_2022_test.csv
+sectioned_data.csv

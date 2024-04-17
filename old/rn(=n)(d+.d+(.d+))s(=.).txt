@@ -1,0 +1,29 @@
+r"\n(?<=\n)(\d+\.\d+(?:\.\d+)*)\s(?=.*)"
+
+
+TEXTRANK 2022
+ROUGE
+Average result for 1963 cases
+      rouge1    rouge2    rougeL  rougeLsum
+0  0.099643  0.025293  0.065567   0.075878
+
+bertscore
+Average result for 1963 cases
+    precision    recall        f1
+0   0.589572  0.663716  0.624022
+
+=========================================
+
+KMEANS
+ROUGE
+Average result for 1959 cases
+      rouge1    rouge2    rougeL  rougeLsum
+0  0.163885  0.027658  0.101422   0.113573
+
+bertscore
+Average result for 1959 cases
+    precision    recall       f1
+0   0.608799  0.658988  0.63242
+
+=========================================
+
